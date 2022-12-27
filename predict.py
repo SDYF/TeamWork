@@ -123,17 +123,20 @@ if __name__ == "__main__":
 
     batch_size = 32
     max_epoch = 30
-    fea_mode_all = ('LogMelSpectrogram', 'MelSpectrogram', 'MFCC', 'Spectrogram')
+    fea_mode_all = ('LogMelSpectrogram', 'MelSpectrogram', 'Spectrogram', 'MFCC',
+                    'Delta', 'Delta-Delta')
     aug_mode_all = ('origin', 'noise')
     use_model_all = ('panns_cnn6', 'panns_cnn10', 'panns_cnn14')
     input_size = {
         'LogMelSpectrogram': 128,
         'MelSpectrogram': 128,
-        'MFCC': 13,
-        'Spectrogram': 257
+        'MFCC': 96,
+        'Spectrogram': 257,
+        'Delta': 96,
+        'Delta-Delta': 96
     }
 
-    fea_mode = fea_mode_all[1]
+    fea_mode = fea_mode_all[5]
     aug_mode = aug_mode_all[0]
     use_model = use_model_all[0]
     learning_rate = 0.001

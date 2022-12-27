@@ -143,6 +143,7 @@ class Trainer():
         sum_batch = len(self.train_dataloder) * self.max_epoch
         for batch_id, (audio, label) in enumerate(self.train_dataloder):
             output = self.model(audio)
+
             # output = torch.nn.functional.softmax(output, dim=-1)
             # print(output)
             # input()
@@ -274,7 +275,7 @@ class Trainer():
                 'matrix/', f'{self.use_model}_{self.fea_mode}_{self.aug_mode}/')
             loss, acc = self.evaluate(resume_model=None,
                                       save_matrix_path=save_martix_path)
-            if acc < self.dev_acc:
+            if acc <= self.dev_acc:
                 if epoch_id >= 20:
                     self.lower_than_best += 1
                     if self.lower_than_best >= 10:
@@ -285,9 +286,10 @@ class Trainer():
                 self.lower_than_best = 0
 
             logger.info(
-                'Dev epoch: {}, time/epoch: {}, loss: {:.5f}, accuracy: {:.5f}'.
-                format(epoch_id, str(timedelta(seconds=(time.time() - start_epoch))),
-                       loss, acc))
+                'Dev epoch: {}, time/epoch: {}, loss: {:.5f}, accuracy: {:.5f}, best_accuracy: {:.5f}'
+                .format(epoch_id,
+                        str(timedelta(seconds=(time.time() - start_epoch))), loss,
+                        acc, self.dev_acc))
             logger.info('=' * 120)
             writer.add_scalar('Dev/Accuracy', acc, dev_step)
             writer.add_scalar('Dev/Loss', loss, dev_step)
@@ -342,20 +344,23 @@ if __name__ == "__main__":
 
     save_model_path = 'models/'
 
-    fea_mode_all = ('LogMelSpectrogram', 'MelSpectrogram', 'MFCC', 'Spectrogram')
+    fea_mode_all = ('LogMelSpectrogram', 'MelSpectrogram', 'Spectrogram', 'MFCC',
+                    'Delta', 'Delta-Delta')
     aug_mode_all = ('origin', 'noise')
     use_model_all = ('panns_cnn6', 'panns_cnn10', 'panns_cnn14')
     input_size = {
         'LogMelSpectrogram': 128,
         'MelSpectrogram': 128,
-        'MFCC': 13,
-        'Spectrogram': 257
+        'MFCC': 96,
+        'Spectrogram': 257,
+        'Delta': 96,
+        'Delta-Delta': 96
     }
 
     max_epoch = 100
     batch_size = 32
 
-    fea_mode = fea_mode_all[0]
+    fea_mode = fea_mode_all[5]
     aug_mode = aug_mode_all[0]
     use_model = use_model_all[0]
     learning_rate = 0.001

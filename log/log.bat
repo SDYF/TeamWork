@@ -1,0 +1,1 @@
+visualdl --logdir panns_cnn6_MelSpectrogram_origin --host 0.0.0.0 --port 21000
