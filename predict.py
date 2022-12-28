@@ -136,7 +136,7 @@ if __name__ == "__main__":
         'Delta-Delta': 96
     }
 
-    fea_mode = fea_mode_all[5]
+    fea_mode = fea_mode_all[0]
     aug_mode = aug_mode_all[0]
     use_model = use_model_all[0]
     learning_rate = 0.001

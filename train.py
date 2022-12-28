@@ -57,7 +57,7 @@ class Trainer():
                                                fea_mode=self.fea_mode,
                                                mode="train",
                                                sample_rate=44100,
-                                               is_mixup=True)
+                                               is_mixup=False)
             self.train_dataloder = DataLoader(dataset=self.train_dataset,
                                               shuffle=True,
                                               batch_size=self.batch_size,
@@ -360,7 +360,7 @@ if __name__ == "__main__":
     max_epoch = 100
     batch_size = 32
 
-    fea_mode = fea_mode_all[5]
+    fea_mode = fea_mode_all[0]
     aug_mode = aug_mode_all[0]
     use_model = use_model_all[0]
     learning_rate = 0.001

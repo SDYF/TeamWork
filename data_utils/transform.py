@@ -13,7 +13,7 @@ def transform(x, mode=None, feature_method='MelSpectrogram'):
     if mode == "origin":
         pass
     if mode == "noise":
-        x = awgn(x=x, snr=40)
+        x = awgn(x=x, snr=25)
     else:
         pass
 
