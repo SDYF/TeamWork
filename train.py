@@ -8,7 +8,7 @@ import torch
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torchsummary import summary
-from models.panns import CNN6, CNN10, CNN14
+from models.panns import CNN6, CNN10, CNN14, ResNet22
 from reader import CustomDataset
 from tqdm import tqdm
 from sklearn.metrics import confusion_matrix
@@ -57,7 +57,7 @@ class Trainer():
                                                fea_mode=self.fea_mode,
                                                mode="train",
                                                sample_rate=44100,
-                                               is_mixup=False)
+                                               is_mixup=True)
             self.train_dataloder = DataLoader(dataset=self.train_dataset,
                                               shuffle=True,
                                               batch_size=self.batch_size,
@@ -82,6 +82,8 @@ class Trainer():
             self.model = CNN10(input_size=input_size, num_class=10)
         elif self.use_model == 'panns_cnn14':
             self.model = CNN14(input_size=input_size, num_class=10)
+        elif self.use_model == 'resnet22':
+            self.model = ResNet22(input_size=input_size, classes_num=10)
         else:
             raise Exception(f'{self.use_model} 模型不存在！')
         self.model.to(self.device)
@@ -143,6 +145,9 @@ class Trainer():
         sum_batch = len(self.train_dataloder) * self.max_epoch
         for batch_id, (audio, label) in enumerate(self.train_dataloder):
             output = self.model(audio)
+            # print(output, output.shape)
+            # print(label.shape)
+            # input()
 
             # output = torch.nn.functional.softmax(output, dim=-1)
             # print(output)
@@ -347,7 +352,7 @@ if __name__ == "__main__":
     fea_mode_all = ('LogMelSpectrogram', 'MelSpectrogram', 'Spectrogram', 'MFCC',
                     'Delta', 'Delta-Delta')
     aug_mode_all = ('origin', 'noise')
-    use_model_all = ('panns_cnn6', 'panns_cnn10', 'panns_cnn14')
+    use_model_all = ('panns_cnn6', 'panns_cnn10', 'panns_cnn14', 'resnet22')
     input_size = {
         'LogMelSpectrogram': 128,
         'MelSpectrogram': 128,
@@ -362,8 +367,8 @@ if __name__ == "__main__":
 
     fea_mode = fea_mode_all[0]
     aug_mode = aug_mode_all[0]
-    use_model = use_model_all[0]
-    learning_rate = 0.001
+    use_model = use_model_all[2]
+    learning_rate = 0.005
 
     my_train = Trainer(use_gpu=True,
                        fea_mode=fea_mode,

@@ -6,7 +6,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from models.panns import CNN6, CNN10, CNN14
+from models.panns import CNN6, CNN10, CNN14, ResNet22
 from reader import CustomDataset
 from sklearn.metrics import confusion_matrix
 from data_utils.utils import plot_confusion_matrix
@@ -64,6 +64,8 @@ class Predicter:
             self.model = CNN10(input_size=input_size, num_class=10)
         elif self.use_model == 'panns_cnn14':
             self.model = CNN14(input_size=input_size, num_class=10)
+        elif self.use_model == 'resnet22':
+            self.model = ResNet22(input_size=input_size, classes_num=10)
         else:
             raise Exception(f'{self.use_model} 模型不存在！')
         self.model.to(self.device)
@@ -83,8 +85,9 @@ class Predicter:
         self.setup_dataloader()
         self.setup_model(input_size=self.input_size, is_train=False)
         predict_model = self.model
-
-        accuracies, preds, labels = [], [], []
+        acc = 0
+        len_all = 0
+        preds, labels = [], []
         with torch.no_grad():
             for batch_id, (audio, label) in enumerate(tqdm(self.predict_dataloder)):
                 output = predict_model(audio)
@@ -100,10 +103,10 @@ class Predicter:
 
                 # 计算准确率
 
-                acc = np.mean((pred == label_temp).astype(int))
-                accuracies.append(acc)
+                acc += np.sum((pred == label_temp).astype(int))
+                len_all += label.shape[0]
 
-        acc = float(sum(accuracies) / len(accuracies))
+        acc = acc / len_all
         # 保存混合矩阵
         if save_matrix_path is not None:
             cm = confusion_matrix(labels, preds)
@@ -126,7 +129,7 @@ if __name__ == "__main__":
     fea_mode_all = ('LogMelSpectrogram', 'MelSpectrogram', 'Spectrogram', 'MFCC',
                     'Delta', 'Delta-Delta')
     aug_mode_all = ('origin', 'noise')
-    use_model_all = ('panns_cnn6', 'panns_cnn10', 'panns_cnn14')
+    use_model_all = ('panns_cnn6', 'panns_cnn10', 'panns_cnn14', 'resnet22')
     input_size = {
         'LogMelSpectrogram': 128,
         'MelSpectrogram': 128,
@@ -138,7 +141,7 @@ if __name__ == "__main__":
 
     fea_mode = fea_mode_all[0]
     aug_mode = aug_mode_all[0]
-    use_model = use_model_all[0]
+    use_model = use_model_all[2]
     learning_rate = 0.001
 
     model_dir = os.path.join(save_model_path, f'{use_model}_{fea_mode}_{aug_mode}/')

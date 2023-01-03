@@ -78,7 +78,7 @@ class CustomDataset(Dataset):
 
         # mixup
         if self.mode == "train" and self.is_mixup:
-            if (idx > 0 and idx % 1 == 0):
+            if (idx > 0 and idx % 5 == 0):
                 while True:
                     mixup_idx = np.random.randint(0, len(self.lines) - 1)
 
